@@ -512,17 +512,35 @@ html, body { width: 100%; height: 100%; font-family: 'DM Sans', -apple-system, B
     </div>
   </div>
 
-  <!-- COMMUNITY -->
-  <div class="screen" id="screen-community">
-    <div class="screen-header animate-in"><div class="greeting">Social</div><div class="name">Feed</div></div>
-    <div class="comm-tabs animate-in delay-1">
-      <button class="c-tab active" onclick="setCommTab(this,'following')">Following</button>
-      <button class="c-tab" onclick="setCommTab(this,'you')">You</button>
-      <button class="c-tab" onclick="setCommTab(this,'clubs')">Clubs</button>
+  <!-- ACTIVITY DETAIL -->
+<div class="screen" id="screen-activity-detail">
+  <div class="screen-header animate-in" style="display:flex;align-items:center;gap:12px;">
+    <div onclick="switchScreen('home')" style="width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
     </div>
-    <div id="feed-list" class="animate-in delay-2"></div>
-    <div class="spacer-bottom"></div>
+    <div><div class="greeting">Activity</div><div class="name" id="detail-name">Run</div></div>
   </div>
+  <div style="padding:12px 16px 0;">
+    <div style="background:var(--surface);border-radius:var(--radius-xl);border:1px solid var(--border);box-shadow:var(--shadow-md);padding:20px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div><div style="font-size:10px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Distance</div><div style="font-size:28px;font-weight:700;color:var(--text-primary);letter-spacing:-1px;" id="detail-dist">0.00 km</div></div>
+        <div><div style="font-size:10px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Duration</div><div style="font-size:28px;font-weight:700;color:var(--text-primary);letter-spacing:-1px;" id="detail-dur">00:00</div></div>
+        <div><div style="font-size:10px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Avg Pace</div><div style="font-size:28px;font-weight:700;color:var(--text-primary);letter-spacing:-1px;" id="detail-pace">--'--"</div></div>
+        <div><div style="font-size:10px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;margin-bottom:4px;">Calories</div><div style="font-size:28px;font-weight:700;color:var(--text-primary);letter-spacing:-1px;" id="detail-cal">0 kcal</div></div>
+      </div>
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);font-size:13px;color:var(--text-tertiary);" id="detail-date"></div>
+    </div>
+  </div>
+  <div style="margin:12px 16px 0;height:200px;border-radius:var(--radius-xl);overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-sm);">
+    <div id="detail-map" style="width:100%;height:100%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;">
+      <div style="text-align:center;color:var(--text-tertiary);font-size:13px;">No route data available</div>
+    </div>
+  </div>
+  <div style="padding:20px 16px;">
+    <button onclick="switchScreen('home')" style="width:100%;background:var(--orange);color:white;border:none;border-radius:var(--radius-lg);padding:16px;font-size:16px;font-weight:700;cursor:pointer;box-shadow:var(--shadow-orange);">Done</button>
+  </div>
+  <div class="spacer-bottom"></div>
+</div>
 
   <!-- PROFILE -->
   <div class="screen" id="screen-profile">
@@ -781,7 +799,7 @@ async function loadActivities() {
     const iconRun=`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F4531C" stroke-width="2.2"><circle cx="12" cy="4" r="2"/><path d="M15.89 8.11C15.5 7.08 14.5 6 13 6h-2c-1.1 0-1.99.9-1.99 2v6H11v6h2v-6h1.5l1.5-4.5"/><path d="M6.5 15.5L5 19"/></svg>`;
     const iconRide=`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.2"><circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/><path d="M5 17L9 6H15L18 17M13 6L16 10H9" stroke-linecap="round"/></svg>`;
     setHTML("activities-list", list.slice(0,4).map(a=>`
-      <div class="activity-item" onclick="showToast('${a.name} · ${a.distance_km} km')">
+      <div class="activity-item" onclick="openActivityDetail('${a.id}', ${JSON.stringify(a).replace(/'/g, "\\'")})"
         <div class="act-icon ${a.type}">${a.type==='ride'?iconRide:iconRun}</div>
         <div class="act-info"><div class="act-name">${a.name}</div><div class="act-date">${a.date}</div></div>
         <div class="act-stats"><div class="act-dist">${parseFloat(a.distance_km).toFixed(2)} km</div><div class="act-time">${formatDur(a.duration_seconds)}</div></div>
@@ -1011,7 +1029,15 @@ function addLap() {
   const el = document.getElementById('laps-list');
   if (el) el.innerHTML += `<div class="lap-item"><span class="lap-num">Lap ${lapNum}</span><span class="lap-dist">${lapDistKm.toFixed(2)} km</span><span class="lap-pace">${lapPace}</span></div>`;
 }
-
+function openActivityDetail(id, activity) {
+  setText('detail-name', activity.name || 'Run');
+  setText('detail-dist', parseFloat(activity.distance_km).toFixed(2) + ' km');
+  setText('detail-dur', formatDur(activity.duration_seconds));
+  setText('detail-pace', formatPace(activity.avg_pace_sec_per_km));
+  setText('detail-cal', (activity.calories || 0) + ' kcal');
+  setText('detail-date', activity.date || '');
+  switchScreen('activity-detail');
+}
 async function finishRun() {
   if (!runStarted || runDistKm < 0.01) {
     showToast('No run data to save', 'error');
