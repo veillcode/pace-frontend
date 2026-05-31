@@ -889,10 +889,10 @@ function startGPS() {
       if (!isPaused && runStarted) {
         if (lastLat !== null && accuracy < 30) {
           const dist = haversineM(lastLat, lastLon, lat, lon);
-          if (dist > 0.5 && dist < 500) {
+          if (dist > 0.5 && dist < 200) {
             runDistKm += dist / 1000;
           }
-        }
+      }
         lastLat = lat; lastLon = lon;
         updateMapPosition(lat, lon);
         gpsCoords.push([lat, lon]);
