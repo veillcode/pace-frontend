@@ -884,7 +884,7 @@ function startGPS() {
       if (!isPaused && runStarted) {
         if (lastLat !== null && accuracy < 30) {
           const dist = haversineM(lastLat, lastLon, lat, lon);
-          if (dist > 2 && dist < 200) { // filter noise & teleports
+          if (dist > 0.5 && dist < 500) {
             runDistKm += dist / 1000;
           }
         }
