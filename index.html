@@ -1035,10 +1035,20 @@ function finishRun() {
 
   // Save to localStorage
   try {
-    const saved = JSON.parse(localStorage.getItem('pace_activities') || '[]');
-    saved.unshift({ ...newAct, gps_coords: gpsCoords });
-    localStorage.setItem('pace_activities', JSON.stringify(saved.slice(0, 50)));
-  } catch(e) {}
+    await fetch(`${API_BASE}/activities/?user_id=user_alex`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            type: newAct.type,
+            name: newAct.name,
+            distance_km: newAct.distance_km,
+            duration_seconds: newAct.duration_seconds,
+            calories: newAct.calories,
+            avg_hr: null,
+            elevation_m: null
+        })
+    });
+} catch(e) { console.log('Save to DB failed:', e); }
 
   showToast(`Saved! ${runDistKm.toFixed(2)} km · ${formatPace(runSeconds / runDistKm)} /km ✅`, 'success');
   setTimeout(() => switchScreen('home'), 1800);
