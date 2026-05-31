@@ -1023,13 +1023,15 @@ function addLap() {
   const el = document.getElementById('laps-list');
   if (el) el.innerHTML += `<div class="lap-item"><span class="lap-num">Lap ${lapNum}</span><span class="lap-dist">${lapDistKm.toFixed(2)} km</span><span class="lap-pace">${lapPace}</span></div>`;
 }
-function openActivityDetail(id, activity) {
-  setText('detail-name', activity.name || 'Run');
-  setText('detail-dist', parseFloat(activity.distance_km).toFixed(2) + ' km');
-  setText('detail-dur', formatDur(activity.duration_seconds));
-  setText('detail-pace', formatPace(activity.avg_pace_sec_per_km));
-  setText('detail-cal', (activity.calories || 0) + ' kcal');
-  setText('detail-date', activity.date || '');
+function openActivityDetail(id) {
+  const a = window._activityCache && window._activityCache[id];
+  if(!a) return;
+  setText('detail-name', a.name || 'Run');
+  setText('detail-dist', parseFloat(a.distance_km).toFixed(2) + ' km');
+  setText('detail-dur', formatDur(a.duration_seconds));
+  setText('detail-pace', formatPace(a.avg_pace_sec_per_km));
+  setText('detail-cal', (a.calories || 0) + ' kcal');
+  setText('detail-date', a.date || '');
   switchScreen('activity-detail');
 }
 async function finishRun() {
