@@ -799,7 +799,7 @@ async function loadActivities() {
     const iconRun=`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F4531C" stroke-width="2.2"><circle cx="12" cy="4" r="2"/><path d="M15.89 8.11C15.5 7.08 14.5 6 13 6h-2c-1.1 0-1.99.9-1.99 2v6H11v6h2v-6h1.5l1.5-4.5"/><path d="M6.5 15.5L5 19"/></svg>`;
     const iconRide=`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.2"><circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/><path d="M5 17L9 6H15L18 17M13 6L16 10H9" stroke-linecap="round"/></svg>`;
     setHTML("activities-list", list.slice(0,4).map(a=>`
-      <div class="activity-item" onclick="openActivityDetail('${a.id}', ${JSON.stringify(a).replace(/'/g, "\\'")})"
+      <div class="activity-item" onclick='openActivityDetail(${JSON.stringify(a)})'>
         <div class="act-icon ${a.type}">${a.type==='ride'?iconRide:iconRun}</div>
         <div class="act-info"><div class="act-name">${a.name}</div><div class="act-date">${a.date}</div></div>
         <div class="act-stats"><div class="act-dist">${parseFloat(a.distance_km).toFixed(2)} km</div><div class="act-time">${formatDur(a.duration_seconds)}</div></div>
